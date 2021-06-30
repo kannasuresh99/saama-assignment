@@ -1,0 +1,20 @@
+<html>
+    <head>
+        <title>Twitter timeline of the user</title>
+    </head>
+    <body>
+        <form action = "http://localhost:5000/tweets_filtered_by_date" method = "POST">
+            <p>Enter the date<input type = "text" name = "date" placeholder="YYYY-MM-DD" /></p>
+            <p><input type = "submit" value = "submit" /></p>
+         </form>
+         <a href="http://localhost:5000/tweets_asc">click here to sort the tweets by ascending order of date</a><br>
+         <a href="http://localhost:5000/tweets_desc">click here to sort the tweets by descending order of date</a>
+
+        {% for tweet in users %}
+            <div>
+                <h3 style="display: inline;">Date: </h3><p style="display: inline;">{{tweet.date}}</p>
+                <h3 style="display: inline;">Tweet: </h3><p style="display: inline;">{{tweet.text}}</p>
+            </div>
+        {% endfor %}
+    </body>
+</html>

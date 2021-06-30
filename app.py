@@ -1,4 +1,4 @@
-from flask import Flask, redirect, url_for
+from flask import Flask, redirect, url_for, render_template, request
 from flask_dance.contrib.twitter import make_twitter_blueprint, twitter
 import requests
 from flask_sqlalchemy import SQLAlchemy
@@ -26,6 +26,9 @@ class User(db.Model):
         self.id = id
         self.text = text
         self.date = date
+    
+    def __repr__(self):
+        return '<User {}>'.format(self.id)
 
 
 
@@ -94,8 +97,15 @@ def tweets():
         db.session.add(timeline_tweets)
         db.session.commit()
         k += 1
-    return res
-    
+    return render_template('tweets.html', users = User.query.all())
+
+@app.route("/tweets_filtered_by_date",methods = ['POST', 'GET'])
+def filter():
+    if request.method == 'POST':
+      result = request.form
+      for key, value in result.items():
+          filtering_date = value
+      return render_template('tweets_filter.html', users = User.query.filter(User.date.like('%{}%'.format(filtering_date))).all())
     
 
 if __name__ == "__main__":
