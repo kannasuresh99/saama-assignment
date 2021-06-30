@@ -4,6 +4,8 @@ import requests
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import database_exists
 from datetime import datetime
+import time
+import atexit
 
 
 app = Flask(__name__)
@@ -100,12 +102,29 @@ def tweets():
     return render_template('tweets.html', users = User.query.all())
 
 @app.route("/tweets_filtered_by_date",methods = ['POST', 'GET'])
-def filter():
+def filterByDate():
     if request.method == 'POST':
       result = request.form
       for key, value in result.items():
           filtering_date = value
       return render_template('tweets_filter.html', users = User.query.filter(User.date.like('%{}%'.format(filtering_date))).all())
+
+@app.route("/tweets_filtered_by_keyword",methods = ['POST', 'GET'])
+def filterByKeyword():
+    if request.method == 'POST':
+      result = request.form
+      for key, value in result.items():
+          filtering_keyword = value
+      return render_template('tweets_filter.html', users = User.query.filter(User.text.like('%{}%'.format(filtering_keyword))).all())
+
+@app.route('/tweets_asc')
+def tweetsAsc():
+    return render_template('tweets_filter.html', users = User.query.order_by(User.date.asc()))
+
+@app.route('/tweets_desc')
+def tweetsDesc():
+    return render_template('tweets_filter.html', users = User.query.order_by(User.date.desc()))
+
     
 
 if __name__ == "__main__":
