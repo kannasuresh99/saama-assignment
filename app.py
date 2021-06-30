@@ -1,11 +1,9 @@
-from datetime import date
-from logging import debug
-import re
-from typing import List
 from flask import Flask, redirect, url_for
 from flask_dance.contrib.twitter import make_twitter_blueprint, twitter
 import requests
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy_utils import database_exists
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -13,19 +11,19 @@ app.secret_key = "supersekrit"
 screen_name = ()
 
 #SqlAlchemy Database Configuration With Mysql
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:12345678@localhost/twitter'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:12345678@localhost/twitter?charset=utf8mb4'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
 #database model
 class User(db.Model):
-    screen_name = db.Column(db.Integer, primary_key=True)
-    text = db.Column(db.String(500), unique=False)
-    date = db.Column(db.Date, unique=False)
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.String(1000), unique=False)
+    date = db.Column(db.DateTime, unique=False)
 
-    def __init__(self, screen_name, text, date):
-        self.screen_name = screen_name
+    def __init__(self, id, text, date):
+        self.id = id
         self.text = text
         self.date = date
 
@@ -73,7 +71,14 @@ def getTimelineTweets(user_id):
     response = requests.request("GET", url, headers=headers, data=payload)
     response = response.json()
     return response
-#user_info = User(response['screen_name'])
+
+#function to convert ISO datetime format to default datetime format
+def getDateTime(date):
+    created_at = datetime.strptime(date,"%Y-%m-%dT%H:%M:%S.000%z")
+    created_at = str(created_at)
+    created_at_date = created_at[:10]
+    created_at_date = datetime.strptime(created_at_date, "%Y-%m-%d")
+    return created_at_date
 
 @app.route("/tweets")
 def tweets():
@@ -81,6 +86,14 @@ def tweets():
     screen_name = index.screen_name
     user_id = getUserid(screen_name)['data'][0]['id']
     res = getTimelineTweets(user_id)
+       
+    db.create_all()
+    for i in range(0,len(res['data'])):
+        k = 0
+        timeline_tweets = User(k ,res['data'][i]['text'], getDateTime(res["data"][i]['created_at']))
+        db.session.add(timeline_tweets)
+        db.session.commit()
+        k += 1
     return res
     
     
