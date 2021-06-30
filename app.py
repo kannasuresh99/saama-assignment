@@ -1,3 +1,4 @@
+from enum import unique
 from flask import Flask, redirect, url_for, render_template, request
 from flask_dance.contrib.twitter import make_twitter_blueprint, twitter
 import requests
@@ -22,11 +23,13 @@ db = SQLAlchemy(app)
 #database model
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    text = db.Column(db.String(1000), unique=False)
+    tweet_id = db.Column(db.String(100), unique=True)
+    text = db.Column(db.String(1000), unique=True)
     date = db.Column(db.DateTime, unique=False)
 
-    def __init__(self, id, text, date):
+    def __init__(self, id, tweet_id, text, date):
         self.id = id
+        self.tweet_id = tweet_id
         self.text = text
         self.date = date
     
@@ -86,19 +89,23 @@ def getDateTime(date):
     created_at_date = datetime.strptime(created_at_date, "%Y-%m-%d")
     return created_at_date
 
+
+
 @app.route("/tweets")
 def tweets():
     index()
     screen_name = index.screen_name
     user_id = getUserid(screen_name)['data'][0]['id']
     res = getTimelineTweets(user_id)
-       
     db.create_all()
     for i in range(0,len(res['data'])):
         k = 0
-        timeline_tweets = User(k ,res['data'][i]['text'], getDateTime(res["data"][i]['created_at']))
-        db.session.add(timeline_tweets)
-        db.session.commit()
+        unique_items = []
+        if  res['data'][i]['text'] not in unique_items:
+            timeline_tweets = User(k , res['data'][i]['id'], res['data'][i]['text'], getDateTime(res["data"][i]['created_at']))
+            unique_items.append( res['data'][i]['text'])
+            db.session.add(timeline_tweets)
+            db.session.commit()
         k += 1
     return render_template('tweets.html', users = User.query.all())
 
@@ -126,9 +133,9 @@ def tweetsAsc():
 def tweetsDesc():
     return render_template('tweets_filter.html', users = User.query.order_by(User.date.desc()))
 
-#fetching tweets periodically using apscheduler for every 1 min
+#fetching tweets periodically using apscheduler for every 5 min
 scheduler = BackgroundScheduler()
-scheduler.add_job(func=tweets, trigger="interval", seconds=60)
+scheduler.add_job(func=tweets, trigger="interval", seconds=300)
 scheduler.start()
 
 # Shut down the scheduler when exiting the app
