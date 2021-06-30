@@ -6,6 +6,7 @@ from sqlalchemy_utils import database_exists
 from datetime import datetime
 import time
 import atexit
+from apscheduler.schedulers.background import BackgroundScheduler
 
 
 app = Flask(__name__)
@@ -125,7 +126,13 @@ def tweetsAsc():
 def tweetsDesc():
     return render_template('tweets_filter.html', users = User.query.order_by(User.date.desc()))
 
-    
+#fetching tweets periodically using apscheduler for every 1 min
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=tweets, trigger="interval", seconds=60)
+scheduler.start()
+
+# Shut down the scheduler when exiting the app
+atexit.register(lambda: scheduler.shutdown())
 
 if __name__ == "__main__":
     app.run(debug = True)
