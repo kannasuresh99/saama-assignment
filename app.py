@@ -2,7 +2,6 @@ from flask import Flask, redirect, url_for, render_template, request
 from flask_dance.contrib.twitter import make_twitter_blueprint, twitter
 import requests
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy_utils import database_exists
 from datetime import datetime
 
 
