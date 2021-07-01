@@ -16,8 +16,7 @@ RUN pip install -r requirements.txt
 
 # Copy the content of the local src directory to the working directory
 COPY app.py .
-ADD templates/tweets.html .
-ADD templates/tweets_filter.html .
+COPY templates /app/templates
 
 # Specify the command to run on container start
 CMD [ "python", "./app.py" ]
