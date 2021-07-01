@@ -9,7 +9,6 @@ application.secret_key = "supersekrit"
 
 #SqlAlchemy Database Configuration With Mysql
 application.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://admin:12345678@database-2.c9d4vjz3jbqc.ap-south-1.rds.amazonaws.com:3306/twitter?charset=utf8mb4'
-application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(application)
 
