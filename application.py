@@ -96,6 +96,7 @@ def tweets():
     res = getTimelineTweets(user_id)
     db.create_all()
     if User.query.filter_by(screen_name=screen_name).first() is None:
+        db.session.query(User).delete()
         for i in range(0,len(res['data'])):
             k = 0
             timeline_tweets = User(k , res['data'][i]['id'], res['data'][i]['text'], getDateTime(res["data"][i]['created_at']), screen_name)
