@@ -23,14 +23,16 @@ db = SQLAlchemy(app)
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     tweet_id = db.Column(db.String(100), unique=True)
-    text = db.Column(db.String(1000), unique=True)
+    text = db.Column(db.String(200), unique=True)
     date = db.Column(db.DateTime, unique=False)
+    screen_name = db.Column(db.String(50), unique=False)
 
-    def __init__(self, id, tweet_id, text, date):
+    def __init__(self, id, tweet_id, text, date, screen_name):
         self.id = id
         self.tweet_id = tweet_id
         self.text = text
         self.date = date
+        self.screen_name = screen_name
     
     def __repr__(self):
         return '<User {}>'.format(self.id)
@@ -97,15 +99,13 @@ def tweets():
     user_id = getUserid(screen_name)['data'][0]['id']
     res = getTimelineTweets(user_id)
     db.create_all()
-    for i in range(0,len(res['data'])):
-        k = 0
-        unique_items = []
-        if  res['data'][i]['text'] not in unique_items:
-            timeline_tweets = User(k , res['data'][i]['id'], res['data'][i]['text'], getDateTime(res["data"][i]['created_at']))
-            unique_items.append( res['data'][i]['text'])
+    if User.query.filter_by(screen_name=screen_name).first() is None:
+        for i in range(0,len(res['data'])):
+            k = 0
+            timeline_tweets = User(k , res['data'][i]['id'], res['data'][i]['text'], getDateTime(res["data"][i]['created_at']), screen_name)
             db.session.add(timeline_tweets)
             db.session.commit()
-        k += 1
+            k += 1
     return render_template('tweets.html', users = User.query.all())
 
 @app.route("/tweets_filtered_by_date",methods = ['POST', 'GET'])
@@ -141,4 +141,4 @@ scheduler.start()
 atexit.register(lambda: scheduler.shutdown())
 
 if __name__ == "__main__":
-    app.run(debug = True)
+    app.run(host='0.0.0.0', port=5000)
