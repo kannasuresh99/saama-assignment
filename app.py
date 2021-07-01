@@ -6,15 +6,15 @@ from sqlalchemy_utils import database_exists
 from datetime import datetime
 
 
-app = Flask(__name__)
-app.secret_key = "supersekrit"
+application = Flask(__name__)
+application.secret_key = "supersekrit"
 screen_name = ()
 
 #SqlAlchemy Database Configuration With Mysql
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://admin:12345678@database-2.c9d4vjz3jbqc.ap-south-1.rds.amazonaws.com:3306/twitter?charset=utf8mb4'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+application.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://admin:12345678@database-2.c9d4vjz3jbqc.ap-south-1.rds.amazonaws.com:3306/twitter?charset=utf8mb4'
+application.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
+db = SQLAlchemy(application)
 
 #database model
 class User(db.Model):
@@ -42,9 +42,9 @@ blueprint = make_twitter_blueprint(
     api_key="YhDEfAPUu3w2tNeERoWbIsDG8",
     api_secret="DWsGDulYhk5BbOGUZ8N3Bxty67BROA7mqiLppsoqgIhO3lRu9K",
 )
-app.register_blueprint(blueprint, url_prefix="/login")
+application.register_blueprint(blueprint, url_prefix="/login")
 
-@app.route("/")
+@application.route("/")
 def index():
     if not twitter.authorized:
         return redirect(url_for("twitter.login"))
@@ -89,7 +89,7 @@ def getDateTime(date):
 
 
 
-@app.route("/tweets")
+@application.route("/tweets")
 def tweets():
     index()
     screen_name = index.screen_name
@@ -105,7 +105,7 @@ def tweets():
             k += 1
     return render_template('tweets.html', users = User.query.all())
 
-@app.route("/tweets_filtered_by_date",methods = ['POST', 'GET'])
+@application.route("/tweets_filtered_by_date",methods = ['POST', 'GET'])
 def filterByDate():
     if request.method == 'POST':
       result = request.form
@@ -113,7 +113,7 @@ def filterByDate():
           filtering_date = value
       return render_template('tweets_filter.html', users = User.query.filter(User.date.like('%{}%'.format(filtering_date))).all())
 
-@app.route("/tweets_filtered_by_keyword",methods = ['POST', 'GET'])
+@application.route("/tweets_filtered_by_keyword",methods = ['POST', 'GET'])
 def filterByKeyword():
     if request.method == 'POST':
       result = request.form
@@ -121,14 +121,14 @@ def filterByKeyword():
           filtering_keyword = value
       return render_template('tweets_filter.html', users = User.query.filter(User.text.like('%{}%'.format(filtering_keyword))).all())
 
-@app.route('/tweets_asc')
+@application.route('/tweets_asc')
 def tweetsAsc():
     return render_template('tweets_filter.html', users = User.query.order_by(User.date.asc()))
 
-@app.route('/tweets_desc')
+@application.route('/tweets_desc')
 def tweetsDesc():
     return render_template('tweets_filter.html', users = User.query.order_by(User.date.desc()))
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+    application.run(host='0.0.0.0', port=5000)
