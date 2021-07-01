@@ -129,5 +129,5 @@ def tweetsDesc():
     return render_template('tweets_filter.html', users = User.query.order_by(User.date.desc()))
 
 
-#if __name__ == "__main__":
-    #application.run(host='0.0.0.0', port=5000)
+if __name__ == "__main__":
+    application.run(host='0.0.0.0', port=5000)
