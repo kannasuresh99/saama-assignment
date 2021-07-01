@@ -4,19 +4,19 @@
     </head>
     <body>
         <div>
-        <form action = "http://localhost:5000/tweets_filtered_by_date" method = "POST">
+        <form action = "http://myflaskapp-env.eba-xftihpg3.ap-south-1.elasticbeanstalk.com/tweets_filtered_by_date" method = "POST">
             <p>Enter the date<input type = "text" name = "date" placeholder="YYYY-MM-DD" /></p>
             <p><input type = "submit" value = "submit" /></p>
          </form>
         </div>
         <div>
-            <form action = "http://localhost:5000/tweets_filtered_by_keyword" method = "POST">
+            <form action = "http://myflaskapp-env.eba-xftihpg3.ap-south-1.elasticbeanstalk.com/tweets_filtered_by_keyword" method = "POST">
                 <p>Enter the keyword<input type = "text" name = "keyword" placeholder="abcd" /></p>
                 <p><input type = "submit" value = "submit" /></p>
              </form>
         </div>
-         <a href="http://localhost:5000/tweets_asc">click here to sort the tweets by ascending order of date</a><br>
-         <a href="http://localhost:5000/tweets_desc">click here to sort the tweets by descending order of date</a>
+         <a href="http://myflaskapp-env.eba-xftihpg3.ap-south-1.elasticbeanstalk.com/tweets_asc">click here to sort the tweets by ascending order of date</a><br>
+         <a href="http://myflaskapp-env.eba-xftihpg3.ap-south-1.elasticbeanstalk.com/tweets_desc">click here to sort the tweets by descending order of date</a>
 
         {% for tweet in users %}
             <div>

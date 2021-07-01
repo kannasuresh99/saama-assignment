@@ -3,11 +3,12 @@ from flask_dance.contrib.twitter import make_twitter_blueprint, twitter
 import requests
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from flask_apscheduler import APScheduler
 
 
 application = Flask(__name__)
 application.secret_key = "supersekrit"
-screen_name = ()
+scheduler = APScheduler()
 
 #SqlAlchemy Database Configuration With Mysql
 application.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://admin:12345678@database-2.c9d4vjz3jbqc.ap-south-1.rds.amazonaws.com:3306/twitter?charset=utf8mb4'
@@ -131,4 +132,6 @@ def tweetsDesc():
 
 
 if __name__ == "__main__":
+    scheduler.add_job(id = 'Scheduled Task', func=tweets, trigger="interval", seconds=120)
+    scheduler.start()
     application.run(host='0.0.0.0', port=5000)
