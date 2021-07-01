@@ -1,4 +1,3 @@
-from enum import unique
 from flask import Flask, redirect, url_for, render_template, request
 from flask_dance.contrib.twitter import make_twitter_blueprint, twitter
 import requests
@@ -15,7 +14,7 @@ app.secret_key = "supersekrit"
 screen_name = ()
 
 #SqlAlchemy Database Configuration With Mysql
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:12345678@localhost/twitter?charset=utf8mb4'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://admin:12345678@database-2.c9d4vjz3jbqc.ap-south-1.rds.amazonaws.com:3306/twitter?charset=utf8mb4'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
